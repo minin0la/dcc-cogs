@@ -1,4 +1,4 @@
 from .DCC_General import DCC_GENERAL
 
-def setup(bot):
-    bot.add_cog(DCC_GENERAL(bot))
+async def setup(bot):
+    await bot.add_cog(DCC_GENERAL(bot))
