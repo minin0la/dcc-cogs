@@ -101,9 +101,9 @@ class DCC_BLACKLIST(commands.Cog):
             colour=discord.Colour(0xFF9700),
             timestamp=datetime.datetime.utcfromtimestamp(int(time.time())),
         )
-        embed.set_thumbnail(
-            url="https://res.cloudinary.com/teepublic/image/private/s--4WWDcpP4--/t_Preview/b_rgb:ffb81c,c_limit,f_jpg,h_630,q_90,w_630/v1468933638/production/designs/84620_4.jpg"
-        )
+        # embed.set_thumbnail(
+        #     url="https://res.cloudinary.com/teepublic/image/private/s--4WWDcpP4--/t_Preview/b_rgb:ffb81c,c_limit,f_jpg,h_630,q_90,w_630/v1468933638/production/designs/84620_4.jpg"
+        # )
         embed.set_author(
             name="Downtown Cab Co. Dispatcher",
             icon_url="https://res.cloudinary.com/teepublic/image/private/s--4WWDcpP4--/t_Preview/b_rgb:ffb81c,c_limit,f_jpg,h_630,q_90,w_630/v1468933638/production/designs/84620_4.jpg",
@@ -256,9 +256,9 @@ class DCC_BLACKLIST(commands.Cog):
             colour=discord.Colour(0xFF9700),
             timestamp=datetime.datetime.utcfromtimestamp(int(time.time())),
         )
-        embed.set_thumbnail(
-            url="https://res.cloudinary.com/teepublic/image/private/s--4WWDcpP4--/t_Preview/b_rgb:ffb81c,c_limit,f_jpg,h_630,q_90,w_630/v1468933638/production/designs/84620_4.jpg"
-        )
+        # embed.set_thumbnail(
+        #     url="https://res.cloudinary.com/teepublic/image/private/s--4WWDcpP4--/t_Preview/b_rgb:ffb81c,c_limit,f_jpg,h_630,q_90,w_630/v1468933638/production/designs/84620_4.jpg"
+        # )
         embed.set_author(
             name="Downtown Cab Co. Dispatcher",
             icon_url="https://res.cloudinary.com/teepublic/image/private/s--4WWDcpP4--/t_Preview/b_rgb:ffb81c,c_limit,f_jpg,h_630,q_90,w_630/v1468933638/production/designs/84620_4.jpg",
