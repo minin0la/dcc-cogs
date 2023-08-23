@@ -11,6 +11,7 @@ import logging
 import datetime
 import difflib
 import random
+import string
 
 class DCC_ANNOUNCER(commands.Cog):
     """Its all about Downtown Cab Co - Announcer System"""
@@ -48,9 +49,20 @@ class DCC_ANNOUNCER(commands.Cog):
 
         embed.add_field(name="**Radio Frequency**", value="```{}```".format(Announcers['MAIN_FREQ']), inline=True)
         embed.add_field(name="**Emergency Frequency**", value="```{}```".format(Announcers["EMERGENCY_FREQ"]), inline=True)
-        for num, x in enumerate(blacklist_message, 1):
-            x = "```diff\n" + x + "```"
-            embed.add_field(name="**Passenger Blacklist as of {} (Page {})**".format(datetime.date.today().strftime("%d/%b/%Y"), num), value=x, inline=False)
+        embed.add_field(name="**Passenger Blacklist as of {}**".format(datetime.date.today().strftime("%d/%b/%Y")), value="", inline=False)
+        for x in list(string.ascii_uppercase):
+            blacklist_message_alpha = ""
+            NameExists = False
+            for y in Blacklists:
+                if y['NAME'].upper().startswith(x):
+                    blacklist_message_alpha = blacklist_message_alpha + "- {} ({})\n{}\n".format(y['NAME'], y['DATE'], y['REASON'])
+                    NameExists = True
+            if NameExists == True:
+                    embed.add_field(name="**{}**".format(x), value="```diff\n" + blacklist_message_alpha + "```", inline=False)
+                    
+        # for num, x in enumerate(blacklist_message, 1):
+        #     x = "```diff\n" + x + "```"
+        #     embed.add_field(name="**Passenger Blacklist as of {} (Page {})**".format(datetime.date.today().strftime("%d/%b/%Y"), num), value=x, inline=False)
         try:
             the_announcer = await message_board_channel.fetch_message(Announcers['MSG_ID'])
             await the_announcer.delete()
