@@ -3,7 +3,7 @@ from .casino import Casino
 __red_end_user_data_statement__ = "This cog stores discord IDs as needed for operation."
 
 
-async async def setup(bot):
+async def setup(bot):
     cog = Casino(bot)
     await bot.add_cog(cog)
     await cog.initialise()
