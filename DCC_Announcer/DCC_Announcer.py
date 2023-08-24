@@ -32,7 +32,7 @@ class BlacklistButton(discord.ui.View):
         self, interaction: discord.Interaction, button: discord.ui.Button
     ):
         Blacklists = await self.blacklists.guild(
-            interaction.client.get_guild(676076481260290079)
+            interaction.client.get_guild(301659110104104962)
         ).Blacklists()
         embed = discord.Embed(
             colour=discord.Colour(0xFF9700),
@@ -326,7 +326,9 @@ class DCC_ANNOUNCER(commands.Cog):
             )
             await ctx.send("Radio Frequency has been updated")
         except:
-            msg = await message_board_channel.send(embed=embed)
+            msg = await message_board_channel.send(
+                embed=embed, view=BlacklistButton(self, self.database)
+            )
             await self.database.guild(ctx.guild).Announcer.set(
                 {"MSG_ID": msg.id, "MAIN_FREQ": main, "EMERGENCY_FREQ": emergency}
             )

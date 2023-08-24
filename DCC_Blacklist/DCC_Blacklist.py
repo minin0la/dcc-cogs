@@ -14,6 +14,89 @@ import random
 import string
 
 
+class BlacklistButton(discord.ui.View):
+    def __init__(self, cog, config: Config):
+        super().__init__(timeout=None)
+        self.cog = cog
+        self.config = config
+        self.database = config.get_conf(self.cog, identifier=1)
+        self.blacklists = config.get_conf(None, identifier=1, cog_name="DCC_BLACKLIST")
+
+    @discord.ui.button(
+        style=discord.ButtonStyle.primary,
+        label="Show reasons",
+        # emoji="",
+        custom_id="buttonevent",
+    )
+    async def button_callback(
+        self, interaction: discord.Interaction, button: discord.ui.Button
+    ):
+        Blacklists = await self.blacklists.guild(
+            interaction.client.get_guild(301659110104104962)
+        ).Blacklists()
+        embed = discord.Embed(
+            colour=discord.Colour(0xFF9700),
+            timestamp=datetime.datetime.utcfromtimestamp(int(time.time())),
+        )
+        embed.set_thumbnail(
+            url="https://res.cloudinary.com/teepublic/image/private/s--4WWDcpP4--/t_Preview/b_rgb:ffb81c,c_limit,f_jpg,h_630,q_90,w_630/v1468933638/production/designs/84620_4.jpg"
+        )
+
+        embed.set_author(
+            name="Downtown Cab Co. Dispatcher",
+            icon_url="https://res.cloudinary.com/teepublic/image/private/s--4WWDcpP4--/t_Preview/b_rgb:ffb81c,c_limit,f_jpg,h_630,q_90,w_630/v1468933638/production/designs/84620_4.jpg",
+        )
+        embed.set_footer(text="Posted by Evelyn")
+
+        embed.add_field(
+            name="**Passenger Blacklist as of {}**".format(
+                datetime.date.today().strftime("%d/%b/%Y")
+            ),
+            value="",
+            inline=False,
+        )
+        try:
+            messageList = []
+            for x in list(string.ascii_uppercase):
+                blacklist_message_alpha = ""
+                NameExists = False
+                for y in Blacklists:
+                    if y["NAME"].upper().startswith(x):
+                        blacklist_message_alpha = (
+                            blacklist_message_alpha
+                            + "- {} ({})\n{}\n".format(
+                                y["NAME"], y["DATE"], y["REASON"]
+                            )
+                        )
+                        NameExists = True
+                if NameExists == True:
+                    messageList.append({"LETTER": x, "TEXT": blacklist_message_alpha})
+            finalmessage = "```diff\n"
+            charsum = 0
+            for x in messageList:
+                charsum = (
+                    len(finalmessage)
+                    + len("+ {} +\n".format(x["LETTER"]))
+                    + len(x["TEXT"])
+                )
+                if (charsum) < 900:
+                    finalmessage = (
+                        finalmessage + "+ {} +\n".format(x["LETTER"]) + x["TEXT"]
+                    )
+                else:
+                    finalmessage = finalmessage + "```"
+                    embed.add_field(name="", value=finalmessage, inline=False)
+                    finalmessage = (
+                        "```diff\n" "+ {} +\n".format(x["LETTER"]) + x["TEXT"]
+                    )
+            if finalmessage != "```diff\n":
+                finalmessage = finalmessage + "```"
+                embed.add_field(name="", value=finalmessage, inline=False)
+        except:
+            pass
+        await interaction.response.send_message("", ephemeral=True, embed=embed)
+
+
 class DCC_BLACKLIST(commands.Cog):
     """Its all about Downtown Cab Co - Blacklist System"""
 
@@ -168,12 +251,16 @@ class DCC_BLACKLIST(commands.Cog):
             the_announcer = await message_board_channel.fetch_message(
                 Announcers["MSG_ID"]
             )
-            await the_announcer.edit(embed=embed)
+            await the_announcer.edit(
+                embed=embed, view=BlacklistButton(self, self.database)
+            )
             await ctx.send(
                 """Blacklist has been updated. (DMB message has been edited)"""
             )
         except:
-            msg = await message_board_channel.send(embed=embed)
+            msg = await message_board_channel.send(
+                embed=embed, view=BlacklistButton(self, self.database)
+            )
             await self.announcer.guild(ctx.guild).Announcer.set(
                 {
                     "MSG_ID": msg.id,
@@ -305,9 +392,13 @@ class DCC_BLACKLIST(commands.Cog):
             the_announcer = await message_board_channel.fetch_message(
                 Announcers["MSG_ID"]
             )
-            await the_announcer.edit(embed=embed)
+            await the_announcer.edit(
+                embed=embed, view=BlacklistButton(self, self.database)
+            )
         except:
-            msg = await message_board_channel.send(embed=embed)
+            msg = await message_board_channel.send(
+                embed=embed, view=BlacklistButton(self, self.database)
+            )
             await self.announcer.guild(ctx.guild).Announcer.set(
                 {
                     "MSG_ID": msg.id,
