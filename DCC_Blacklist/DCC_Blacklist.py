@@ -101,9 +101,9 @@ class DCC_BLACKLIST(commands.Cog):
             colour=discord.Colour(0xFF9700),
             timestamp=datetime.datetime.utcfromtimestamp(int(time.time())),
         )
-        # embed.set_thumbnail(
-        #     url="https://res.cloudinary.com/teepublic/image/private/s--4WWDcpP4--/t_Preview/b_rgb:ffb81c,c_limit,f_jpg,h_630,q_90,w_630/v1468933638/production/designs/84620_4.jpg"
-        # )
+        embed.set_thumbnail(
+            url="https://res.cloudinary.com/teepublic/image/private/s--4WWDcpP4--/t_Preview/b_rgb:ffb81c,c_limit,f_jpg,h_630,q_90,w_630/v1468933638/production/designs/84620_4.jpg"
+        )
         embed.set_author(
             name="Downtown Cab Co. Dispatcher",
             icon_url="https://res.cloudinary.com/teepublic/image/private/s--4WWDcpP4--/t_Preview/b_rgb:ffb81c,c_limit,f_jpg,h_630,q_90,w_630/v1468933638/production/designs/84620_4.jpg",
@@ -120,15 +120,6 @@ class DCC_BLACKLIST(commands.Cog):
             value="```{}```".format(Announcers["EMERGENCY_FREQ"]),
             inline=True,
         )
-        # for num, x in enumerate(blacklist_message, 1):
-        #     x = "```diff\n" + x + "```"
-        #     embed.add_field(
-        #         name="**Passenger Blacklist as of {} (Page {})**".format(
-        #             datetime.date.today().strftime("%d/%b/%Y"), num
-        #         ),
-        #         value=x,
-        #         inline=False,
-        #     )
         embed.add_field(
             name="**Passenger Blacklist as of {}**".format(
                 datetime.date.today().strftime("%d/%b/%Y")
@@ -137,8 +128,6 @@ class DCC_BLACKLIST(commands.Cog):
             inline=False,
         )
         try:
-            OldEmbed = 0
-            EmbedCounter = 0
             messageList = []
             for x in list(string.ascii_uppercase):
                 blacklist_message_alpha = ""
@@ -147,39 +136,32 @@ class DCC_BLACKLIST(commands.Cog):
                     if y["NAME"].upper().startswith(x):
                         blacklist_message_alpha = (
                             blacklist_message_alpha
-                            + "-{}-\n+({})+\n{}\n".format(
-                                y["NAME"], y["DATE"], y["REASON"]
-                            )
+                            + "- {} ({})\n".format(y["NAME"], y["DATE"])
                         )
                         NameExists = True
                 if NameExists == True:
-                    blacklist_message_alpha = (
-                        "```diff\n" + blacklist_message_alpha + "```"
-                    )
                     messageList.append({"LETTER": x, "TEXT": blacklist_message_alpha})
+            finalmessage = "```diff\n"
+            charsum = 0
             for x in messageList:
-                if len(x["TEXT"]) + OldEmbed < 500 and EmbedCounter < 3:
-                    embed.add_field(
-                        name=x["LETTER"],
-                        value=x["TEXT"],
-                        inline=True,
+                charsum = (
+                    len(finalmessage)
+                    + len("+ {} +\n".format(x["LETTER"]))
+                    + len(x["TEXT"])
+                )
+                if (charsum) < 900:
+                    finalmessage = (
+                        finalmessage + "+ {} +\n".format(x["LETTER"]) + x["TEXT"]
                     )
-                    OldEmbed = OldEmbed + len(x["TEXT"])
-                    EmbedCounter = EmbedCounter + 1
-                elif EmbedCounter == 3:
-                    embed.add_field(
-                        name=x["LETTER"],
-                        value=x["TEXT"],
-                        inline=True,
-                    )
-                    OldEmbed = 0
-                    EmbedCounter = 0
-                    OldEmbed = OldEmbed + len(x["TEXT"])
-                    EmbedCounter = EmbedCounter + 1
                 else:
-                    embed.add_field(name=x["LETTER"], value=x["TEXT"], inline=False)
-                    OldEmbed = 0
-                    EmbedCounter = 0
+                    finalmessage = finalmessage + "```"
+                    embed.add_field(name="", value=finalmessage, inline=False)
+                    finalmessage = (
+                        "```diff\n" "+ {} +\n".format(x["LETTER"]) + x["TEXT"]
+                    )
+            if finalmessage != "```diff\n":
+                finalmessage = finalmessage + "```"
+                embed.add_field(name="", value=finalmessage, inline=False)
         except:
             pass
         try:
@@ -256,9 +238,9 @@ class DCC_BLACKLIST(commands.Cog):
             colour=discord.Colour(0xFF9700),
             timestamp=datetime.datetime.utcfromtimestamp(int(time.time())),
         )
-        # embed.set_thumbnail(
-        #     url="https://res.cloudinary.com/teepublic/image/private/s--4WWDcpP4--/t_Preview/b_rgb:ffb81c,c_limit,f_jpg,h_630,q_90,w_630/v1468933638/production/designs/84620_4.jpg"
-        # )
+        embed.set_thumbnail(
+            url="https://res.cloudinary.com/teepublic/image/private/s--4WWDcpP4--/t_Preview/b_rgb:ffb81c,c_limit,f_jpg,h_630,q_90,w_630/v1468933638/production/designs/84620_4.jpg"
+        )
         embed.set_author(
             name="Downtown Cab Co. Dispatcher",
             icon_url="https://res.cloudinary.com/teepublic/image/private/s--4WWDcpP4--/t_Preview/b_rgb:ffb81c,c_limit,f_jpg,h_630,q_90,w_630/v1468933638/production/designs/84620_4.jpg",
@@ -275,15 +257,6 @@ class DCC_BLACKLIST(commands.Cog):
             value="```{}```".format(Announcers["EMERGENCY_FREQ"]),
             inline=True,
         )
-        # for num, x in enumerate(blacklist_message, 1):
-        #     x = "```diff\n" + x + "```"
-        #     embed.add_field(
-        #         name="**Passenger Blacklist as of {} (Page {})**".format(
-        #             datetime.date.today().strftime("%d/%b/%Y"), num
-        #         ),
-        #         value=x,
-        #         inline=False,
-        #     )
         embed.add_field(
             name="**Passenger Blacklist as of {}**".format(
                 datetime.date.today().strftime("%d/%b/%Y")
@@ -292,8 +265,6 @@ class DCC_BLACKLIST(commands.Cog):
             inline=False,
         )
         try:
-            OldEmbed = 0
-            EmbedCounter = 0
             messageList = []
             for x in list(string.ascii_uppercase):
                 blacklist_message_alpha = ""
@@ -302,39 +273,32 @@ class DCC_BLACKLIST(commands.Cog):
                     if y["NAME"].upper().startswith(x):
                         blacklist_message_alpha = (
                             blacklist_message_alpha
-                            + "-{}-\n+({})+\n{}\n".format(
-                                y["NAME"], y["DATE"], y["REASON"]
-                            )
+                            + "- {} ({})\n".format(y["NAME"], y["DATE"])
                         )
                         NameExists = True
                 if NameExists == True:
-                    blacklist_message_alpha = (
-                        "```diff\n" + blacklist_message_alpha + "```"
-                    )
                     messageList.append({"LETTER": x, "TEXT": blacklist_message_alpha})
+            finalmessage = "```diff\n"
+            charsum = 0
             for x in messageList:
-                if len(x["TEXT"]) + OldEmbed < 500 and EmbedCounter < 3:
-                    embed.add_field(
-                        name=x["LETTER"],
-                        value=x["TEXT"],
-                        inline=True,
+                charsum = (
+                    len(finalmessage)
+                    + len("+ {} +\n".format(x["LETTER"]))
+                    + len(x["TEXT"])
+                )
+                if (charsum) < 900:
+                    finalmessage = (
+                        finalmessage + "+ {} +\n".format(x["LETTER"]) + x["TEXT"]
                     )
-                    OldEmbed = OldEmbed + len(x["TEXT"])
-                    EmbedCounter = EmbedCounter + 1
-                elif EmbedCounter == 3:
-                    embed.add_field(
-                        name=x["LETTER"],
-                        value=x["TEXT"],
-                        inline=True,
-                    )
-                    OldEmbed = 0
-                    EmbedCounter = 0
-                    OldEmbed = OldEmbed + len(x["TEXT"])
-                    EmbedCounter = EmbedCounter + 1
                 else:
-                    embed.add_field(name=x["LETTER"], value=x["TEXT"], inline=False)
-                    OldEmbed = 0
-                    EmbedCounter = 0
+                    finalmessage = finalmessage + "```"
+                    embed.add_field(name="", value=finalmessage, inline=False)
+                    finalmessage = (
+                        "```diff\n" "+ {} +\n".format(x["LETTER"]) + x["TEXT"]
+                    )
+            if finalmessage != "```diff\n":
+                finalmessage = finalmessage + "```"
+                embed.add_field(name="", value=finalmessage, inline=False)
         except:
             pass
         try:

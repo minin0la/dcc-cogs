@@ -14,6 +14,89 @@ import random
 import string
 
 
+class BlacklistButton(discord.ui.View):
+    def __init__(self, cog, config: Config):
+        super().__init__(timeout=None)
+        self.cog = cog
+        self.config = config
+        self.database = config.get_conf(self.cog, identifier=1)
+        self.blacklists = config.get_conf(None, identifier=1, cog_name="DCC_BLACKLIST")
+
+    @discord.ui.button(
+        style=discord.ButtonStyle.primary,
+        label="Show reasons",
+        # emoji="",
+        custom_id="buttonevent",
+    )
+    async def button_callback(
+        self, interaction: discord.Interaction, button: discord.ui.Button
+    ):
+        Blacklists = await self.blacklists.guild(
+            interaction.client.get_guild(676076481260290079)
+        ).Blacklists()
+        embed = discord.Embed(
+            colour=discord.Colour(0xFF9700),
+            timestamp=datetime.datetime.utcfromtimestamp(int(time.time())),
+        )
+        embed.set_thumbnail(
+            url="https://res.cloudinary.com/teepublic/image/private/s--4WWDcpP4--/t_Preview/b_rgb:ffb81c,c_limit,f_jpg,h_630,q_90,w_630/v1468933638/production/designs/84620_4.jpg"
+        )
+
+        embed.set_author(
+            name="Downtown Cab Co. Dispatcher",
+            icon_url="https://res.cloudinary.com/teepublic/image/private/s--4WWDcpP4--/t_Preview/b_rgb:ffb81c,c_limit,f_jpg,h_630,q_90,w_630/v1468933638/production/designs/84620_4.jpg",
+        )
+        embed.set_footer(text="Posted by Evelyn")
+
+        embed.add_field(
+            name="**Passenger Blacklist as of {}**".format(
+                datetime.date.today().strftime("%d/%b/%Y")
+            ),
+            value="",
+            inline=False,
+        )
+        try:
+            messageList = []
+            for x in list(string.ascii_uppercase):
+                blacklist_message_alpha = ""
+                NameExists = False
+                for y in Blacklists:
+                    if y["NAME"].upper().startswith(x):
+                        blacklist_message_alpha = (
+                            blacklist_message_alpha
+                            + "- {} ({})\n{}\n".format(
+                                y["NAME"], y["DATE"], y["REASON"]
+                            )
+                        )
+                        NameExists = True
+                if NameExists == True:
+                    messageList.append({"LETTER": x, "TEXT": blacklist_message_alpha})
+            finalmessage = "```diff\n"
+            charsum = 0
+            for x in messageList:
+                charsum = (
+                    len(finalmessage)
+                    + len("+ {} +\n".format(x["LETTER"]))
+                    + len(x["TEXT"])
+                )
+                if (charsum) < 900:
+                    finalmessage = (
+                        finalmessage + "+ {} +\n".format(x["LETTER"]) + x["TEXT"]
+                    )
+                else:
+                    finalmessage = finalmessage + "```"
+                    embed.add_field(name="", value=finalmessage, inline=False)
+                    finalmessage = (
+                        "```diff\n" "+ {} +\n".format(x["LETTER"]) + x["TEXT"]
+                    )
+            if finalmessage != "```diff\n":
+                finalmessage = finalmessage + "```"
+                embed.add_field(name="", value=finalmessage, inline=False)
+        except:
+            pass
+        await interaction.response.send_message("", ephemeral=True, embed=embed)
+
+
 class DCC_ANNOUNCER(commands.Cog):
     """Its all about Downtown Cab Co - Announcer System"""
 
@@ -54,9 +137,9 @@ class DCC_ANNOUNCER(commands.Cog):
             colour=discord.Colour(0xFF9700),
             timestamp=datetime.datetime.utcfromtimestamp(int(time.time())),
         )
-        # embed.set_thumbnail(
-        #     url="https://res.cloudinary.com/teepublic/image/private/s--4WWDcpP4--/t_Preview/b_rgb:ffb81c,c_limit,f_jpg,h_630,q_90,w_630/v1468933638/production/designs/84620_4.jpg"
-        # )
+        embed.set_thumbnail(
+            url="https://res.cloudinary.com/teepublic/image/private/s--4WWDcpP4--/t_Preview/b_rgb:ffb81c,c_limit,f_jpg,h_630,q_90,w_630/v1468933638/production/designs/84620_4.jpg"
+        )
         embed.set_author(
             name="Downtown Cab Co. Dispatcher",
             icon_url="https://res.cloudinary.com/teepublic/image/private/s--4WWDcpP4--/t_Preview/b_rgb:ffb81c,c_limit,f_jpg,h_630,q_90,w_630/v1468933638/production/designs/84620_4.jpg",
@@ -81,8 +164,6 @@ class DCC_ANNOUNCER(commands.Cog):
             inline=False,
         )
         try:
-            OldEmbed = 0
-            EmbedCounter = 0
             messageList = []
             for x in list(string.ascii_uppercase):
                 blacklist_message_alpha = ""
@@ -91,39 +172,32 @@ class DCC_ANNOUNCER(commands.Cog):
                     if y["NAME"].upper().startswith(x):
                         blacklist_message_alpha = (
                             blacklist_message_alpha
-                            + "-{}-\n+({})+\n{}\n".format(
-                                y["NAME"], y["DATE"], y["REASON"]
-                            )
+                            + "- {} ({})\n".format(y["NAME"], y["DATE"])
                         )
                         NameExists = True
                 if NameExists == True:
-                    blacklist_message_alpha = (
-                        "```diff\n" + blacklist_message_alpha + "```"
-                    )
                     messageList.append({"LETTER": x, "TEXT": blacklist_message_alpha})
+            finalmessage = "```diff\n"
+            charsum = 0
             for x in messageList:
-                if len(x["TEXT"]) + OldEmbed < 500 and EmbedCounter < 3:
-                    embed.add_field(
-                        name=x["LETTER"],
-                        value=x["TEXT"],
-                        inline=True,
+                charsum = (
+                    len(finalmessage)
+                    + len("+ {} +\n".format(x["LETTER"]))
+                    + len(x["TEXT"])
+                )
+                if (charsum) < 900:
+                    finalmessage = (
+                        finalmessage + "+ {} +\n".format(x["LETTER"]) + x["TEXT"]
                     )
-                    OldEmbed = OldEmbed + len(x["TEXT"])
-                    EmbedCounter = EmbedCounter + 1
-                elif EmbedCounter == 3:
-                    embed.add_field(
-                        name=x["LETTER"],
-                        value=x["TEXT"],
-                        inline=True,
-                    )
-                    OldEmbed = 0
-                    EmbedCounter = 0
-                    OldEmbed = OldEmbed + len(x["TEXT"])
-                    EmbedCounter = EmbedCounter + 1
                 else:
-                    embed.add_field(name=x["LETTER"], value=x["TEXT"], inline=False)
-                    OldEmbed = 0
-                    EmbedCounter = 0
+                    finalmessage = finalmessage + "```"
+                    embed.add_field(name="", value=finalmessage, inline=False)
+                    finalmessage = (
+                        "```diff\n" "+ {} +\n".format(x["LETTER"]) + x["TEXT"]
+                    )
+            if finalmessage != "```diff\n":
+                finalmessage = finalmessage + "```"
+                embed.add_field(name="", value=finalmessage, inline=False)
         except:
             pass
         try:
@@ -133,7 +207,9 @@ class DCC_ANNOUNCER(commands.Cog):
             await the_announcer.delete()
         except:
             pass
-        msg = await message_board_channel.send(embed=embed)
+        msg = await message_board_channel.send(
+            embed=embed, view=BlacklistButton(self, self.database)
+        )
         Announcers["MSG_ID"] = msg.id
         await self.database.guild(ctx.guild).Announcer.set(Announcers)
         await ctx.send("Announcer message has been refreshed!")
@@ -173,9 +249,9 @@ class DCC_ANNOUNCER(commands.Cog):
             colour=discord.Colour(0xFF9700),
             timestamp=datetime.datetime.utcfromtimestamp(int(time.time())),
         )
-        # embed.set_thumbnail(
-        #     url="https://res.cloudinary.com/teepublic/image/private/s--4WWDcpP4--/t_Preview/b_rgb:ffb81c,c_limit,f_jpg,h_630,q_90,w_630/v1468933638/production/designs/84620_4.jpg"
-        # )
+        embed.set_thumbnail(
+            url="https://res.cloudinary.com/teepublic/image/private/s--4WWDcpP4--/t_Preview/b_rgb:ffb81c,c_limit,f_jpg,h_630,q_90,w_630/v1468933638/production/designs/84620_4.jpg"
+        )
         embed.set_author(
             name="Downtown Cab Co. Dispatcher",
             icon_url="https://res.cloudinary.com/teepublic/image/private/s--4WWDcpP4--/t_Preview/b_rgb:ffb81c,c_limit,f_jpg,h_630,q_90,w_630/v1468933638/production/designs/84620_4.jpg",
@@ -183,22 +259,15 @@ class DCC_ANNOUNCER(commands.Cog):
         embed.set_footer(text="Posted by Evelyn")
 
         embed.add_field(
-            name="**Radio Frequency**", value="```{}```".format(main), inline=True
+            name="**Radio Frequency**",
+            value="```{}```".format(Announcers["MAIN_FREQ"]),
+            inline=True,
         )
         embed.add_field(
             name="**Emergency Frequency**",
-            value="```{}```".format(emergency),
+            value="```{}```".format(Announcers["EMERGENCY_FREQ"]),
             inline=True,
         )
-        # for num, x in enumerate(blacklist_message, 1):
-        #     x = "```diff\n" + x + "```"
-        #     embed.add_field(
-        #         name="**Passenger Blacklist as of {} (Page {})**".format(
-        #             datetime.date.today().strftime("%d/%b/%Y"), num
-        #         ),
-        #         value=x,
-        #         inline=False,
-        #     )
         embed.add_field(
             name="**Passenger Blacklist as of {}**".format(
                 datetime.date.today().strftime("%d/%b/%Y")
@@ -207,8 +276,6 @@ class DCC_ANNOUNCER(commands.Cog):
             inline=False,
         )
         try:
-            OldEmbed = 0
-            EmbedCounter = 0
             messageList = []
             for x in list(string.ascii_uppercase):
                 blacklist_message_alpha = ""
@@ -217,39 +284,32 @@ class DCC_ANNOUNCER(commands.Cog):
                     if y["NAME"].upper().startswith(x):
                         blacklist_message_alpha = (
                             blacklist_message_alpha
-                            + "-{}-\n+({})+\n{}\n".format(
-                                y["NAME"], y["DATE"], y["REASON"]
-                            )
+                            + "- {} ({})\n".format(y["NAME"], y["DATE"])
                         )
                         NameExists = True
                 if NameExists == True:
-                    blacklist_message_alpha = (
-                        "```diff\n" + blacklist_message_alpha + "```"
-                    )
                     messageList.append({"LETTER": x, "TEXT": blacklist_message_alpha})
+            finalmessage = "```diff\n"
+            charsum = 0
             for x in messageList:
-                if len(x["TEXT"]) + OldEmbed < 500 and EmbedCounter < 3:
-                    embed.add_field(
-                        name=x["LETTER"],
-                        value=x["TEXT"],
-                        inline=True,
+                charsum = (
+                    len(finalmessage)
+                    + len("+ {} +\n".format(x["LETTER"]))
+                    + len(x["TEXT"])
+                )
+                if (charsum) < 900:
+                    finalmessage = (
+                        finalmessage + "+ {} +\n".format(x["LETTER"]) + x["TEXT"]
                     )
-                    OldEmbed = OldEmbed + len(x["TEXT"])
-                    EmbedCounter = EmbedCounter + 1
-                elif EmbedCounter == 3:
-                    embed.add_field(
-                        name=x["LETTER"],
-                        value=x["TEXT"],
-                        inline=True,
-                    )
-                    OldEmbed = 0
-                    EmbedCounter = 0
-                    OldEmbed = OldEmbed + len(x["TEXT"])
-                    EmbedCounter = EmbedCounter + 1
                 else:
-                    embed.add_field(name=x["LETTER"], value=x["TEXT"], inline=False)
-                    OldEmbed = 0
-                    EmbedCounter = 0
+                    finalmessage = finalmessage + "```"
+                    embed.add_field(name="", value=finalmessage, inline=False)
+                    finalmessage = (
+                        "```diff\n" "+ {} +\n".format(x["LETTER"]) + x["TEXT"]
+                    )
+            if finalmessage != "```diff\n":
+                finalmessage = finalmessage + "```"
+                embed.add_field(name="", value=finalmessage, inline=False)
         except:
             pass
         try:
